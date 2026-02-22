@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cloud Resume Challenge - Matías Oviedo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+
+    /* ── LIGHT MODE ── */
+body.light {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface2: #eaecf0;
+  --border: #d1d5db;
+  --accent: #00a36e;
+  --accent2: #c0430e;
+  --text: #111827;
+  --muted: #6b7280;
+}
+body.light .card-desc { color: #374151; }
+body.light footer { background: #e5e7eb; color: #6b7280; }
+
+.card-link {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.card-link:hover { opacity: 0.7; }
+
+/* ── BOTÓN TOGGLE ── */
+#theme-toggle {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.4rem;
+  z-index: 1000;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+#theme-toggle:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 16px rgba(0,229,160,0.2);
+}
+#theme-toggle .toggle-icon { font-size: 1rem; transition: transform 0.4s; }
+#theme-toggle:hover .toggle-icon { transform: rotate(20deg); }
+
+/* Transición suave global */
+*, *::before, *::after {
+  transition: background-color 0.35s ease, border-color 0.35s ease, color 0.2s ease;
+}
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161d;
+      --surface2: #1a1e28;
+      --border: #252a38;
+      --accent: #00e5a0;
+      --accent2: #e05a2b;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --heading-font: 'Playfair Display', Georgia, serif;
+      --mono: 'IBM Plex Mono', monospace;
+      --body-font: 'IBM Plex Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--body-font);
+      font-weight: 300;
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    .cv-header {
+      border-bottom: 1px solid var(--border);
+      padding: 4rem 0 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cv-header::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -120px;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cv-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -80px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(224,90,43,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .name-tag {
+      font-family: var(--heading-font);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text);
+    }
+    .name-tag span { color: var(--accent); }
+
+    .role-tag {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-top: 0.75rem;
+    }
+
+    .contact-row {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .contact-row a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .contact-row a:hover { color: var(--accent); }
+    .contact-row .dot { color: var(--border); }
+
+    /* ── VISITOR COUNTER ─────────────────────────────────── */
+    .counter-bar {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-top: 2rem;
+      max-width: 340px;
+      position: relative;
+    }
+    .counter-bar .pulse {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,160,0.5); }
+      50%       { box-shadow: 0 0 0 6px rgba(0,229,160,0); }
+    }
+    .counter-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.3;
+    }
+    .counter-value {
+      font-family: var(--mono);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .counter-note {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────── */
+    .cv-body {
+      padding: 3rem 0 5rem;
+    }
+
+    /* ── SECTION TITLES ──────────────────────────────────── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── CARDS ───────────────────────────────────────────── */
+    .cv-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .cv-card:hover {
+      border-color: rgba(0,229,160,0.3);
+      transform: translateX(4px);
+    }
+    .cv-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 20%; bottom: 20%;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 0 3px 3px 0;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .cv-card:hover::before { opacity: 1; }
+
+    .card-title {
+      font-family: var(--heading-font);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+    .card-company {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent2);
+      font-weight: 600;
+    }
+    .card-period {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+    .card-desc {
+      font-size: 0.9rem;
+      color: #b0b8c8;
+      margin-bottom: 0.9rem;
+    }
+
+    /* Tags */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SKILLS SIDEBAR ──────────────────────────────────── */
+    .skills-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+    .skill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+    }
+    .skill-name {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text);
+    }
+    .skill-bar {
+      width: 55%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #00bfff);
+      border-radius: 99px;
+      animation: growBar 1.2s ease forwards;
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+    @keyframes growBar {
+      to { transform: scaleX(1); }
+    }
+
+    /* ── EDUCATION ICON ──────────────────────────────────── */
+    .edu-icon {
+      width: 40px; height: 40px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    /* ── FADE IN ─────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.22s; }
+    .delay-3 { animation-delay: 0.34s; }
+    .delay-4 { animation-delay: 0.46s; }
+    .delay-5 { animation-delay: 0.58s; }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .counter-bar { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <button id="theme-toggle" title="Cambiar tema">
+  <span class="toggle-icon">🌙</span>
+  <span id="toggle-label">Light</span>
+  </button>
+  
+  <!-- ═══════════════════════════════ HEADER ══════════════════════════════ -->
+  <header class="cv-header">
+    <div class="container">
+      <div class="fade-up">
+        <div class="name-tag">Matias <span>Oviedo</span><br></div>
+        <div class="role-tag">// Application Support Engineer · Buenos Aires, AR</div>
+        <div class="contact-row">
+          <a href="mailto:tu@email.com">oviedo.matias.d@gmail.com</a>
+          <span class="dot">·</span>
+          <a href="https://github.com/TutteOviedo" target="_blank">github.com/TutteOviedo</a>
+          <span class="dot">·</span>
+          <a href="https://www.linkedin.com/in/mat%C3%ADas-oviedo-422852141/" target="_blank">linkedin.com/in/matías-oviedo</a>
+          <span class="dot">·</span>
+          <a href="#">tuportafolio.com</a>
+        </div>
+      </div>
+
+      <!-- ── CONTADOR DE VISITAS ── -->
+      <div class="counter-bar fade-up delay-2">
+        <div class="pulse"></div>
+        <div>
+          <div class="counter-label">Visitas al perfil</div>
+          <!--
+            ╔══════════════════════════════════════════════════════╗
+            ║  CONECTAR A TU API                                  ║
+            ║  Reemplaza el "—" por el valor que retorne tu API.  ║
+            ║  Ejemplo con fetch:                                 ║
+            ║                                                      ║
+            ║  fetch('https://tu-api.com/contador')               ║
+            ║    .then(r => r.json())                             ║
+            ║    .then(d => {                                     ║
+            ║      document.getElementById('visits').            ║
+            ║        textContent = d.count.toLocaleString();     ║
+            ║    });                                              ║
+            ╚══════════════════════════════════════════════════════╝
+          -->
+          <div class="counter-value" id="visits">—</div>
+          <div class="counter-note">Conectar a API para activar</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ═════════════════════════════ BODY ══════════════════════════════════ -->
+  <main class="cv-body">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- ────────── COLUMNA PRINCIPAL ────────── -->
+        <div class="col-lg-8">
+
+          <!-- EXPERIENCIA -->
+          <section class="mb-5 fade-up delay-2">
+            <div class="section-label">Experiencia</div>
+
+            <div class="cv-card">
+              <div class="card-title">Application Support Engineer</div>
+              <div class="card-company">CDT S.A. - Tiempo completo</div>
+              <div class="card-period">Jun 2022 — Presente · 3 años 9 meses</div>
+              <p class="card-desc">
+                  Especialista en soporte técnico y funcional para aplicaciones críticas, gestionando el ciclo completo de vida de incidencias a través de Invgate bajo estrictos acuerdos de nivel de servicio (SLA). Realizo diagnósticos técnicos, ejecución de pruebas funcionales y documentación de procesos, actuando como el principal punto de resolución para problemas complejos y garantizando la continuidad operativa del negocio mediante soporte evolutivo y preventivo.
+              </p>
+              <div class="tag-list">
+                <span class="tag">SQL</span>
+                <span class="tag">Invgate</span>
+                <span class="tag">Azure DevOps</span>
+                <span class="tag">Troubleshooting</span>
+                <span class="tag">Postman</span>
+              </div>
+            </div>
+
+            <div class="cv-card">
+              <div class="card-title">Implementation Consultant</div>
+              <div class="card-company">NovaRed · Tiempo completo</div>
+              <div class="card-period">Ene 2021 — Jun 2022 · 1 año 6 meses</div>
+              <p class="card-desc">
+                Participé activamente en la implementación y parametrización de la plataforma RSA Archer (GRC) para entidades del sector bancario. Trabajé como nexo técnico-funcional, encargándome del relevamiento de requerimientos, la negociación de alcances y la configuración del sistema para la gestión de KPIs y documentación normativa, asegurando soluciones alineadas a las necesidades del cliente.
+              </p>
+              <div class="tag-list">
+                <span class="tag">GRC</span>
+                <span class="tag">Análisis de Requerimientos</span>
+                <span class="tag">Troubleshooting</span>
+                <span class="tag">Parametrización</span>
+                <span class="tag">Sector Bancario</span>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- CERTIFICACIONES -->
+          <section class="fade-up delay-4">
+            <div class="section-label">Certificaciones</div>
+
+            <div class="cv-card">
+              <div class="d-flex gap-3 align-items-start">
+                <div class="edu-icon">🏅</div>
+                <div>
+                  <div class="card-title">AWS Certified Solutions Architect – Associate (En curso)</div>
+                  <div class="card-company">Amazon Web Services (AWS)</div>
+                  <div class="card-period">Jul/Ago 2026</div>
+                  <p class="card-desc mb-0">
+                    Formación enfocada en el diseño de soluciones resilientes, de alto rendimiento y costo-eficientes en la nube de AWS. Incluye el despliegue de arquitecturas multi-capa, gestión de servicios de cómputo, almacenamiento, bases de datos y estrategias avanzadas de seguridad y red.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- EDUCACIÓN -->
+          <section class="fade-up delay-3">
+            <div class="section-label">Educación</div>
+
+            <div class="cv-card">
+              <div class="d-flex gap-3 align-items-start">
+                <div class="edu-icon">🎓</div>
+                <div>
+                  <div class="card-title">Data Science</div>
+                  <div class="card-company">UTN.BA - Centro de e-Learning</div>
+                  <div class="card-period">Ene 2025 - Mar 2025</div>
+                  <p class="card-desc mb-0">
+                    Formación especializada en la extracción, limpieza y análisis estadístico de grandes volúmenes de datos para la generación de insights estratégicos. Incluye el desarrollo de modelos predictivos utilizando Python, manejo de librerías de Machine Learning y visualización de datos complejos para facilitar la toma de decisiones basada en evidencia.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-card">
+              <div class="d-flex gap-3 align-items-start">
+                <div class="edu-icon">🎓</div>
+                <div>
+                  <div class="card-title">Javascript</div>
+                  <div class="card-company">Coderhouse</div>
+                  <div class="card-period">Nov 2023 - Ene 2024</div>
+                  <p class="card-desc mb-0">
+                    Especialización en programación funcional y lógica de desarrollo con JavaScript (ES6+). Implementación de interactividad avanzada, manipulación del DOM y consumo de APIs externas para la creación de aplicaciones web dinámicas y escalables.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-card">
+              <div class="d-flex gap-3 align-items-start">
+                <div class="edu-icon">🎓</div>
+                <div>
+                  <div class="card-title">Desarrollo Web</div>
+                  <div class="card-company">Coderhouse</div>
+                  <div class="card-period">Sep 2023 - Nov 2023</div>
+                  <p class="card-desc mb-0">
+                    Capacitación en la creación de sitios web profesionales utilizando HTML y CSS. Enfoque en diseño responsivo, optimización de rendimiento y buenas prácticas de maquetación para garantizar una excelente experiencia de usuario en cualquier dispositivo.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-card">
+              <div class="d-flex gap-3 align-items-start">
+                <div class="edu-icon">🎓</div>
+                <div>
+                  <div class="card-title">Técnico en Informática</div>
+                  <div class="card-company">Instituto Técnico Dr. Emilio Lamarca</div>
+                  <div class="card-period">2012 — 2015</div>
+                  <p class="card-desc mb-0">
+                    Secundario técnico con orientación en infomática.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </section>
+        </div>
+
+        <!-- ────────── SIDEBAR ────────── -->
+        <div class="col-lg-4">
+
+          <!-- HABILIDADES -->
+          <div class="fade-up delay-3">
+            <div class="section-label">Habilidades</div>
+            <div class="skills-block">
+              <div class="skill-row">
+                <span class="skill-name">Troubleshooting</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div>
+              </div>
+              <div class="skill-row">
+                <span class="skill-name">SQL</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+              </div>
+              <div class="skill-row">
+                <span class="skill-name">Scripting & Logic</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div>
+              </div>
+              <div class="skill-row">
+                <span class="skill-name">API Testing</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+              </div>
+              <div class="skill-row">
+                <span class="skill-name">AWS</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:30%"></div></div>
+              </div>
+              <div class="skill-row">
+                <span class="skill-name">Linux</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- IDIOMAS -->
+          <div class="fade-up delay-4 mt-4">
+            <div class="section-label">Idiomas</div>
+            <div class="skills-block">
+              <div class="skill-row">
+                <span class="skill-name">Español</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:100%"></div></div>
+              </div>
+              <div class="skill-row">
+                <span class="skill-name">Inglés</span>
+                <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- METODOLOGÍAS -->
+          <div class="fade-up delay-5 mt-4">
+            <div class="section-label">Metodologías</div>
+            <div class="skills-block">
+              <div class="tag-list">
+                <span class="tag">Agile / Scrum</span>
+                <span class="tag">SLA Management</span>
+                <span class="tag">Root Cause Analysis (RCA)</span>
+                <span class="tag">Technical Documentation</span>
+                <span class="tag">ITIL Foundations</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROYECTOS DESTACADOS -->
+          <div class="fade-up delay-5 mt-4">
+            <div class="section-label">Proyectos</div>
+            <div class="cv-card">
+              <div class="card-title">Cloud Resume Challenge (AWS | DevOps)</div>
+              <div class="card-period">2026</div>
+              <p class="card-desc mb-2">Despliegue de una infraestructura Serverless en AWS para hostear un portfolio profesional. Implementación de CI/CD mediante GitHub Actions, almacenamiento en S3, seguridad con CloudFront y un contador de visitas dinámico utilizando API Gateway, Lambda y DynamoDB.</p>
+              <div class="tag-list">
+                <span class="tag">AWS S3</span>
+                <span class="tag">IaaC</span>
+                <span class="tag">Serverless</span>
+                <span class="tag">CI/CD</span>
+                <span class="tag">API Gateway</span>
+                <span class="tag">AWS Lambda & DynamoDB</span>
+              </div>
+            </div>
+
+            <div class="cv-card">
+              <div class="card-title">Data Science</div>
+              <div class="card-period">2025</div>
+              <p class="card-desc mb-2 mt-2">Desarrollo de un pipeline completo de ciencia de datos, abarcando desde la limpieza de datasets hasta la implementación de modelos de Machine Learning. El proyecto destaca por el uso de Python y librerías estadísticas para transformar datos crudos en información estratégica para la toma de decisiones.</p>
+              <div class="tag-list">
+                <span class="tag">Python</span>
+                <span class="tag">Pandas / NumPy</span>
+                <span class="tag">Machine Learning</span>
+                <span class="tag">Análisis Estadístico</span>
+                <span class="tag">Matplotlib / Seaborn</span>
+              </div>
+              <div class="d-flex justify-content-start mt-3">
+                <a href="https://github.com/TutteOviedo/DataScience/blob/main/Trabajo_Integrador_Final_Mat%C3%ADas_Oviedo.ipynb" target="_blank" class="card-link">
+                  Ver en GitHub ↗
+                </a>
+              </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      Última actualización: Febrero 2026 &nbsp;·&nbsp; Generado con ❤️ y Bootstrap
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  async function loadVisitCount() {
+    try {
+      const res  = await fetch('https://vanghn1sdk.execute-api.us-east-1.amazonaws.com/default/GetCloudResumeCount');
+      const data = await res.json();
+
+      document.getElementById('visits').textContent = data.visits;
+
+      document.querySelector('.counter-note').textContent = 'Visitas registradas';
+    } catch (err) {
+      document.getElementById('visits').textContent = 'Error';
+      console.error('No se pudo cargar el contador:', err);
+    }
+  }
+
+  loadVisitCount();
+</script>
+
+<script>
+  const btn   = document.getElementById('theme-toggle');
+  const label = document.getElementById('toggle-label');
+  const icon  = btn.querySelector('.toggle-icon');
+
+  btn.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light');
+    icon.textContent  = isLight ? '☀️' : '🌙';
+    label.textContent = isLight ? 'Dark' : 'Light';
+  });
+</script>
+
+</body>
+</html>
