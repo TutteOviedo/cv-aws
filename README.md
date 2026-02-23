@@ -34,6 +34,14 @@ Este proyecto surge como una práctica intensiva y aplicada para familiarizarme 
 * Gestión de Accesos: Configuración de IAM siguiendo el principio de "mínimo privilegio" y uso de GitHub Secrets para proteger las credenciales.
 
 
+### Gestión de Costos & Gobernanza (FinOps)
+
+* AWS Budgets: Implementación de un presupuesto con alerta de facturación de $1 USD mensual para asegurar que el proyecto se mantenga dentro del Free Tier.
+
+* CloudWatch: Configuración de una alarma operativa que vigila la métrica de cargos estimados (EstimatedCharges), configurada para dispararse al alcanzar los $0.80 USD.
+
+* Amazon SNS: Creación de un canal de notificaciones que vincula las alertas directamente con mi correo personal, permitiéndome reaccionar ante cualquier consumo inesperado.
+
 
 ## 🚧 Road Map (Próximos Pasos)
 
