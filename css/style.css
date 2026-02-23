@@ -349,3 +349,12 @@ body.light footer { background: #e5e7eb; color: #6b7280; }
     @media (max-width: 768px) {
       .counter-bar { max-width: 100%; }
     }
+
+
+    /* ── TYPEWRITER ──────────────────────────────────────── */
+    .tw-cursor {
+      color: var(--accent);
+    }
+    .tw-cursor.done {
+      opacity: 0;
+    }
